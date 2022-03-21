@@ -2,12 +2,77 @@
 Data Visualization project on covid-19 worldwide.
 Prepare a dashboard to show the covid-19 situation worldwide, and comparing it with other countries
 
-## Tool used : 
+## Tool used
 - SQL
 - Tableau
 
 ## Process
-
+### SQL
+1) Found the gobal numbers of total cases, total deaths and death percentage
+```sql
+Select
+    sum(new_cases) as total_cases,
+    sum(new_deaths) as total_deaths,
+    sum(new_deaths)/sum(new_cases)*100 as death_percentage
+from
+    `project-for-portfolio.covid_project.covid_deaths`
+where
+    continent is not null
+order by
+    1, 2;
+```
+2) I took some data out as they were not needed and wanted to stay consistent
+```sql
+select
+    location,
+    sum(new_deaths) as total_death_count
+from
+    `project-for-portfolio.covid_project.covid_deaths`
+where
+    continent is null
+    and
+    location not in('World', 'European Union', 'International', 'Upper middle income', 'High income', 'Lower middle income', 'Low income')
+group by
+    location
+order by
+    total_death_count desc;
+```
+3) looking at countries with hightest infection rate compared to population
+```sql
+select
+    location, 
+    population,
+    max(total_cases) as highest_infection_count,
+    max((total_cases/population))*100 as percent_of_population_infected
+from
+    `project-for-portfolio.covid_project.covid_deaths`
+group by
+    location,
+    population
+order by
+    4 desc;
+```
+4) Looked for total cases vs population and show what percentage of population got infected.
+```sql
+select
+    location,
+    population,
+    date,
+    max(total_cases) as highest_infection_count,
+    max(total_cases/population)*100 as percent_of_population_infected
+from
+    `project-for-portfolio.covid_project.covid_deaths`
+where
+    location = "India"
+group by
+    location,
+    population,
+    date
+order by
+    5 desc;
+```
+- After running queries I export these data into excel and saved files separately
+- Imported those excel files into tableau
 ### Tableau
 
 1) Created a table of global data which shows total cases, total deaths and death percentage
